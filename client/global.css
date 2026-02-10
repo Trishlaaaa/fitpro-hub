@@ -1,0 +1,223 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Khand:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+  /**
+   * Tailwind CSS theme - Fitness Brand
+   * Dark black + green theme applied globally.
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+  */
+  :root {
+    /* Core: Pure black background, white text */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 3%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Brand Green - Primary */
+    --primary: 142 70% 45%;
+    --primary-foreground: 0 0% 0%;
+    /* Black text on green primary for contrast */
+
+    /* Dark accent */
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 70%;
+
+    /* Brand Green accent */
+    --accent: 142 70% 45%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 12%;
+    --input: 0 0% 10%;
+    --ring: 142 70% 45%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 2%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 142 70% 45%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 142 70% 45%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 10%;
+    --sidebar-ring: 142 70% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Khand', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl font-bold;
+  }
+
+  h2 {
+    @apply text-4xl md:text-5xl font-bold;
+  }
+
+  h3 {
+    @apply text-3xl md:text-4xl font-bold;
+  }
+
+  h4 {
+    @apply text-2xl md:text-3xl font-bold;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
+
+@layer components {
+
+  /* Button variants */
+  .btn-primary {
+    @apply px-8 py-3 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold font-khand uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-3 rounded-full bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground font-semibold font-khand uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-secondary/30 active:scale-95;
+  }
+
+  .btn-outline {
+    @apply px-8 py-3 rounded-full border-2 border-primary text-primary font-semibold font-khand uppercase tracking-wider transition-all duration-300 hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/20 active:scale-95;
+  }
+
+  /* Card styles */
+  .card-elevated {
+    @apply bg-gradient-to-br from-[#0d0d0d] via-[#050505] to-black text-foreground rounded-3xl p-6 shadow-xl border border-primary/20 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 backdrop-blur-md;
+  }
+
+  /* Container */
+  .container-fitness {
+    @apply max-w-7xl mx-auto px-4 md:px-6;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-dark {
+    @apply bg-gradient-to-b from-background via-background to-background;
+  }
+
+  .bg-gradient-subtle {
+    @apply bg-gradient-to-b from-background via-background to-[#0d0d0d];
+  }
+
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-primary/10 via-primary/5 to-transparent;
+  }
+
+  /* Section dividers */
+  .gradient-divider {
+    @apply relative my-16 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent;
+  }
+
+  /* Backdrop blur effect */
+  .glass-effect {
+    @apply backdrop-blur-md bg-black/40 border border-white/10;
+  }
+
+  /* Text with black border - outline text effect */
+  .text-stroke {
+    @apply text-foreground;
+    -webkit-text-stroke: 1px hsl(0 0% 0% / 0.8);
+    paint-order: stroke fill;
+  }
+
+  .text-stroke-lg {
+    @apply text-foreground;
+    -webkit-text-stroke: 2px hsl(0 0% 0% / 0.9);
+    paint-order: stroke fill;
+  }
+
+  /* Interactive card hover effects */
+  .card-interactive {
+    @apply relative overflow-hidden rounded-2xl p-6 transition-all duration-300 cursor-pointer;
+    @apply bg-gradient-to-br from-card via-card to-card/95;
+    @apply border border-primary/20;
+    @apply shadow-lg hover:shadow-2xl hover:shadow-primary/20;
+    @apply hover:scale-105 hover:border-primary/50;
+  }
+
+  .card-interactive::before {
+    @apply absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0;
+    @apply opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+    content: '';
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary via-primary/80 to-primary/60;
+    @apply bg-clip-text text-transparent;
+  }
+
+  /* Pulse animation */
+  @keyframes pulse-soft {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Gradient border */
+  .border-gradient {
+    @apply relative border border-transparent;
+    background: linear-gradient(var(--card), var(--card)) padding-box,
+      linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary)) / 0.5) border-box;
+  }
+}
