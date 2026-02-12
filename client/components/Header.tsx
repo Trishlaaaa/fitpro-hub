@@ -10,7 +10,7 @@ export default function Header() {
   const isLoggedIn = !!user;
 
   const navLinks = [
-    { label: 'Home', href: '/' },
+    { label: isLoggedIn ? 'Dashboard' : 'Home', href: isLoggedIn ? '/dashboard' : '/' },
     { label: 'Workouts', href: '/workouts' },
     { label: 'Diet', href: '/diet' },
     { label: 'Shop', href: '/shop' },

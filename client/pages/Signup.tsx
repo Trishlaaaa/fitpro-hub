@@ -1,12 +1,15 @@
 import { Link, useNavigate } from 'react-router-dom';
 import api from '@/lib/api';
 import { toast } from 'sonner';
-import { useState } from 'react';
-import { Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Mail, Lock, User, ArrowRight } from 'lucide-react';
 import Header from '@/components/Header';
+import { useAuth } from '../context/AuthContext';
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { login, user } = useAuth();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,6 +20,12 @@ export default function Signup() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({
@@ -45,8 +54,18 @@ export default function Signup() {
         gender: formData.gender,
         fitness_goal: formData.goal,
       });
-      toast.success("Account created successfully! Please login.");
-      navigate('/login');
+
+      // Auto login after signup
+      const loginRes = await api.post('/auth/login/', {
+        username: formData.email,
+        password: formData.password,
+      });
+
+      login(loginRes.data.token);
+      toast.success("Account created successfully! Redirecting...");
+      // Navigation will happen automatically via useEffect when user state updates
+      // but we can also force it if needed. UseEffect is cleaner.
+
     } catch (error: any) {
       console.error(error);
       if (error.response && error.response.data) {

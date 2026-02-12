@@ -1,14 +1,16 @@
 
 import os
+import sys
 import subprocess
 
 def run_cmd(cmd):
     print(f"Running: {cmd}")
     subprocess.run(cmd, shell=True, check=True)
 
-base_dir = r"c:\Users\trish\Downloads\fitpro-hub-968\backend"
+# Use current directory
+base_dir = os.path.dirname(os.path.abspath(__file__))
 manage_py = os.path.join(base_dir, "manage.py")
-python_cmd = os.path.join(base_dir, "venv", "Scripts", "python.exe")
+python_cmd = sys.executable
 
 if __name__ == "__main__":
     # Create migrations for 'core' app (where custom User model is)
