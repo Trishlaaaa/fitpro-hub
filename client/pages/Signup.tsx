@@ -1,9 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '@/lib/api';
+import { toast } from 'sonner';
 import { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
 import Header from '@/components/Header';
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,19 +25,39 @@ export default function Signup() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
     if (!agreedToTerms) {
-      alert('Please agree to terms and conditions');
+      toast.error('Please agree to terms and conditions');
       return;
     }
+
     setIsLoading(true);
-    // TODO: Implement actual signup
-    setTimeout(() => setIsLoading(false), 1000);
+    try {
+      await api.post('/auth/register/', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        gender: formData.gender,
+        fitness_goal: formData.goal,
+      });
+      toast.success("Account created successfully! Please login.");
+      navigate('/login');
+    } catch (error: any) {
+      console.error(error);
+      if (error.response && error.response.data) {
+        const messages = Object.values(error.response.data).flat().join(', ');
+        toast.error(messages || "Registration failed");
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

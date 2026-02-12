@@ -1,18 +1,32 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import Header from '@/components/Header';
+import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
+import { toast } from 'sonner';
 
 export default function Login() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement actual login
-    setTimeout(() => setIsLoading(false), 1000);
+    try {
+      // API expects username, we use email as username
+      const response = await api.post('/auth/login/', { username: email, password });
+      login(response.data.token);
+      toast.success("Welcome back!");
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error("Invalid email or password");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

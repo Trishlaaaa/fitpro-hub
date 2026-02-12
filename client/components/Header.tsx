@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { Menu, X, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isLoggedIn = false; // TODO: Replace with actual auth state
+  const { user, logout } = useAuth();
+  const isLoggedIn = !!user;
 
   const navLinks = [
     { label: 'Home', href: '/' },
@@ -58,7 +60,11 @@ export default function Header() {
                 </Link>
               </>
             ) : (
-              <button className="p-2 hover:bg-secondary rounded-full transition-colors">
+              <button
+                onClick={logout}
+                className="p-2 hover:bg-secondary rounded-full transition-colors"
+                title="Sign Out"
+              >
                 <LogOut className="w-5 h-5" />
               </button>
             )}
