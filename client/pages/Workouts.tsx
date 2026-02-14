@@ -1,113 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Filter, Check, PlayCircle } from 'lucide-react';
 import Header from '@/components/Header';
+import api from '@/lib/api';
+
+interface Exercise {
+  name: string;
+  sets: number;
+  reps: number | string;
+  rest: number;
+}
+
+interface Workout {
+  id: number;
+  name: string;
+  category: string;
+  level: string;
+  gender: string;
+  duration: number;
+  difficulty: string;
+  exercises: Exercise[];
+  completed?: boolean;
+}
 
 export default function Workouts() {
   const [selectedGoal, setSelectedGoal] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [selectedGender, setSelectedGender] = useState('all');
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const workouts = [
-    {
-      id: 1,
-      name: 'Beginner Upper Body',
-      goal: 'muscle-gain',
-      level: 'beginner',
-      gender: 'male',
-      duration: 45,
-      difficulty: '🟢 Easy',
-      exercises: [
-        { name: 'Push-ups', sets: 3, reps: 10, rest: 60 },
-        { name: 'Dumbbell Rows', sets: 3, reps: 12, rest: 60 },
-        { name: 'Chest Press', sets: 3, reps: 10, rest: 60 },
-        { name: 'Shoulder Press', sets: 3, reps: 10, rest: 45 },
-      ],
-      completed: true,
-    },
-    {
-      id: 2,
-      name: 'Weight Loss Cardio',
-      goal: 'weight-loss',
-      level: 'intermediate',
-      gender: 'female',
-      duration: 30,
-      difficulty: '🟡 Moderate',
-      exercises: [
-        { name: 'Running', sets: 1, reps: '20 mins', rest: 0 },
-        { name: 'Jump Rope', sets: 3, reps: 30, rest: 30 },
-        { name: 'Burpees', sets: 3, reps: 15, rest: 45 },
-        { name: 'Mountain Climbers', sets: 3, reps: 20, rest: 45 },
-      ],
-      completed: false,
-    },
-    {
-      id: 3,
-      name: 'Advanced Leg Day',
-      goal: 'muscle-gain',
-      level: 'advanced',
-      gender: 'male',
-      duration: 60,
-      difficulty: '🔴 Hard',
-      exercises: [
-        { name: 'Barbell Squats', sets: 4, reps: 8, rest: 120 },
-        { name: 'Leg Press', sets: 4, reps: 10, rest: 90 },
-        { name: 'Leg Curls', sets: 3, reps: 12, rest: 60 },
-        { name: 'Calf Raises', sets: 4, reps: 15, rest: 45 },
-      ],
-      completed: false,
-    },
-    {
-      id: 4,
-      name: 'Strength Training',
-      goal: 'strength',
-      level: 'intermediate',
-      gender: 'male',
-      duration: 50,
-      difficulty: '🟡 Moderate',
-      exercises: [
-        { name: 'Deadlifts', sets: 5, reps: 5, rest: 150 },
-        { name: 'Bench Press', sets: 5, reps: 5, rest: 150 },
-        { name: 'Rows', sets: 5, reps: 5, rest: 120 },
-        { name: 'Overhead Press', sets: 3, reps: 8, rest: 90 },
-      ],
-      completed: false,
-    },
-    {
-      id: 5,
-      name: 'Maintenance Full Body',
-      goal: 'maintenance',
-      level: 'beginner',
-      gender: 'female',
-      duration: 40,
-      difficulty: '🟢 Easy',
-      exercises: [
-        { name: 'Squats', sets: 3, reps: 15, rest: 60 },
-        { name: 'Push-ups', sets: 3, reps: 12, rest: 60 },
-        { name: 'Rows', sets: 3, reps: 12, rest: 60 },
-        { name: 'Lunges', sets: 3, reps: 12, rest: 45 },
-      ],
-      completed: true,
-    },
-    {
-      id: 6,
-      name: 'Core Strength',
-      goal: 'strength',
-      level: 'beginner',
-      gender: 'female',
-      duration: 30,
-      difficulty: '🟢 Easy',
-      exercises: [
-        { name: 'Planks', sets: 3, reps: '45 sec', rest: 45 },
-        { name: 'Crunches', sets: 3, reps: 20, rest: 45 },
-        { name: 'Leg Raises', sets: 3, reps: 15, rest: 45 },
-        { name: 'Russian Twists', sets: 3, reps: 20, rest: 30 },
-      ],
-      completed: false,
-    },
-  ];
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const res = await api.get('/workouts/');
+        setWorkouts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch workouts", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkouts();
+  }, []);
+
+  const handleStartWorkout = async (workout: Workout) => {
+    try {
+      console.log("Logging workout:", workout.name);
+      await api.post('/logs/workout/', {
+        workout_type: workout.name,
+        duration_minutes: workout.duration
+      });
+
+      // Update local state to show completion
+      setWorkouts(prev => prev.map(w =>
+        w.id === workout.id ? { ...w, completed: true } : w
+      ));
+
+      alert(`Workout "${workout.name}" started and logged!`);
+    } catch (err) {
+      console.error("Failed to log workout", err);
+      alert("Failed to log workout. Please try again.");
+    }
+  };
 
   const filteredWorkouts = workouts.filter(workout => {
-    const goalMatch = selectedGoal === 'all' || workout.goal === selectedGoal;
+    const goalMatch = selectedGoal === 'all' || workout.category === selectedGoal;
     const levelMatch = selectedLevel === 'all' || workout.level === selectedLevel;
     const genderMatch = selectedGender === 'all' || workout.gender === selectedGender;
     return goalMatch && levelMatch && genderMatch;
@@ -260,9 +217,12 @@ export default function Workouts() {
                 </div>
 
                 {/* CTA */}
-                <button className="w-full relative z-10 flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold font-khand uppercase text-sm tracking-wider hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105 active:scale-95">
+                <button
+                  onClick={() => handleStartWorkout(workout)}
+                  className="w-full relative z-10 flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold font-khand uppercase text-sm tracking-wider hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105 active:scale-95"
+                >
                   <PlayCircle className="w-5 h-5" />
-                  Start Workout
+                  {workout.completed ? "Restart Workout" : "Start Workout"}
                 </button>
               </div>
             );

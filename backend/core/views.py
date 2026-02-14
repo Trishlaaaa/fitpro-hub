@@ -2,8 +2,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, WeightLogSerializer, WorkoutLogSerializer, DietLogSerializer
-from .models import WeightLog, WorkoutLog, DietLog
+from .serializers import UserSerializer, WeightLogSerializer, WorkoutLogSerializer, DietLogSerializer, WorkoutSerializer, CustomWorkoutSerializer
+from .models import WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout
 
 User = get_user_model()
 
@@ -55,7 +55,9 @@ class WorkoutLogListCreate(generics.ListCreateAPIView):
         return WorkoutLog.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        print(f"DEBUG: Creating workout log for user: {self.request.user}")
         serializer.save(user=self.request.user)
+        print("DEBUG: Workout log saved successfully")
 
 class DietLogListCreate(generics.ListCreateAPIView):
     serializer_class = DietLogSerializer
@@ -66,3 +68,52 @@ class DietLogListCreate(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class WorkoutListView(generics.ListAPIView):
+    serializer_class = WorkoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        print(f"DEBUG: Fetching workouts for user: {self.request.user}")
+        user = self.request.user
+        queryset = DefaultWorkout.objects.all()
+        print(f"DEBUG: Found {queryset.count()} workouts in database")
+        
+        # Sort based on user's fitness goal matching the workout category
+        if user.fitness_goal:
+            # Create a case statement to prioritize matching categories
+            from django.db.models import Case, When, Value, IntegerField
+            
+            # Map user goals to workout categories if names differ slightly
+            # Assuming exact match or simple mapping for now
+            goal = user.fitness_goal
+            
+            queryset = queryset.annotate(
+                priority=Case(
+                    When(category__iexact=goal, then=Value(1)),
+                    default=Value(2),
+                    output_field=IntegerField(),
+                )
+            ).order_by('priority', 'name')
+            
+        return queryset
+
+
+class CustomWorkoutListCreate(generics.ListCreateAPIView):
+    serializer_class = CustomWorkoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CustomWorkout.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class CustomWorkoutDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CustomWorkoutSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return CustomWorkout.objects.filter(user=self.request.user)
+

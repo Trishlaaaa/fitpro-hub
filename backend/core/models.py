@@ -44,3 +44,36 @@ class DietLog(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.date}: {self.calories}kcal"
+
+class Workout(models.Model):
+    name = models.CharField(max_length=200)
+    category = models.CharField(max_length=50) # muscle-gain, weight-loss, strength, maintenance
+    level = models.CharField(max_length=20) # beginner, intermediate, advanced
+    gender = models.CharField(max_length=10) # male, female
+    duration = models.IntegerField(help_text="Duration in minutes")
+    difficulty = models.CharField(max_length=20) # Easy, Moderate, Hard
+    exercises = models.JSONField(default=list) # List of exercises: {name, sets, reps, rest}
+    
+    def __str__(self):
+        return self.name
+
+class CustomWorkout(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='custom_workouts')
+    name = models.CharField(max_length=200)
+    exercises = models.JSONField(default=list) # List of exercises
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} ({self.user.username})"
+
+class DefaultWorkout(models.Model):
+    name = models.CharField(max_length=200)
+    category = models.CharField(max_length=50) # muscle-gain, weight-loss, strength, maintenance
+    level = models.CharField(max_length=20) # beginner, intermediate, advanced
+    gender = models.CharField(max_length=10) # male, female
+    duration = models.IntegerField(help_text="Duration in minutes")
+    difficulty = models.CharField(max_length=20) # Easy, Moderate, Hard
+    exercises = models.JSONField(default=list) # List of exercises: {name, sets, reps, rest}
+    
+    def __str__(self):
+        return self.name

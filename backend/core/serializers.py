@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import WeightLog, WorkoutLog, DietLog
+from .models import WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout
 
 User = get_user_model()
 
@@ -21,6 +21,11 @@ class DietLogSerializer(serializers.ModelSerializer):
         model = DietLog
         fields = ('id', 'user', 'date', 'calories', 'protein', 'carbs', 'fats')
         read_only_fields = ('user', 'date')
+
+class WorkoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DefaultWorkout
+        fields = ('id', 'name', 'category', 'level', 'gender', 'duration', 'difficulty', 'exercises')
 
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='first_name', required=False)
@@ -56,3 +61,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.is_verified = is_verified
         user.save()
         return user
+
+class CustomWorkoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomWorkout
+        fields = ('id', 'name', 'exercises', 'created_at')
+        read_only_fields = ('created_at',)

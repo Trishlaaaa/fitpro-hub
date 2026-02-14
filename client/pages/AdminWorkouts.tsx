@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trash2, Edit2, Plus } from 'lucide-react';
 import Header from '@/components/Header';
+import api from '@/lib/api';
 
 export default function AdminWorkouts() {
-  const [workouts, setWorkouts] = useState([
-    { id: 1, name: 'Beginner Upper Body', goal: 'Muscle Gain', level: 'Beginner', duration: 45, exercises: 4 },
-    { id: 2, name: 'Weight Loss Cardio', goal: 'Weight Loss', level: 'Intermediate', duration: 30, exercises: 4 },
-    { id: 3, name: 'Advanced Leg Day', goal: 'Muscle Gain', level: 'Advanced', duration: 60, exercises: 4 },
-    { id: 4, name: 'Strength Training', goal: 'Strength', level: 'Intermediate', duration: 50, exercises: 4 },
-    { id: 5, name: 'Core Strength', goal: 'Strength', level: 'Beginner', duration: 30, exercises: 4 },
-  ]);
+  const [workouts, setWorkouts] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.get('/workouts/').then(res => setWorkouts(res.data)).catch(console.error);
+  }, []);
 
   const deleteWorkout = (id: number) => {
     if (confirm('Are you sure you want to delete this workout?')) {
@@ -70,23 +69,23 @@ export default function AdminWorkouts() {
                     <td className="py-4 px-6 text-foreground font-semibold">{workout.name}</td>
                     <td className="py-4 px-6">
                       <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-primary/20 text-primary">
-                        {workout.goal}
+                        {workout.category}
                       </span>
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${workout.level === 'Beginner'
-                            ? 'bg-green-500/20 text-green-600'
-                            : workout.level === 'Intermediate'
-                              ? 'bg-yellow-500/20 text-yellow-600'
-                              : 'bg-red-500/20 text-red-600'
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${workout.level === 'beginner'
+                          ? 'bg-green-500/20 text-green-600'
+                          : workout.level === 'intermediate'
+                            ? 'bg-yellow-500/20 text-yellow-600'
+                            : 'bg-red-500/20 text-red-600'
                           }`}
                       >
                         {workout.level}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-muted-foreground">{workout.duration} min</td>
-                    <td className="py-4 px-6 text-muted-foreground">{workout.exercises}</td>
+                    <td className="py-4 px-6 text-muted-foreground">{workout.exercises.length}</td>
                     <td className="py-4 px-6">
                       <div className="flex gap-2">
                         <button className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors">
