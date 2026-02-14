@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, WeightLog, WorkoutLog, DietLog
+from .models import User, WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout
 
 # Register your models here.
 
@@ -34,3 +34,21 @@ class DietLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'calories', 'protein', 'carbs', 'fats', 'date')
     search_fields = ('user__username',)
     list_filter = ('date',)
+
+@admin.register(Workout)
+class WorkoutAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'level', 'gender', 'duration', 'difficulty')
+    search_fields = ('name', 'category')
+    list_filter = ('category', 'level', 'gender', 'difficulty')
+
+@admin.register(CustomWorkout)
+class CustomWorkoutAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'created_at')
+    search_fields = ('name', 'user__username')
+    list_filter = ('created_at',)
+
+@admin.register(DefaultWorkout)
+class DefaultWorkoutAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'level', 'gender', 'duration', 'difficulty')
+    search_fields = ('name', 'category')
+    list_filter = ('category', 'level', 'gender', 'difficulty')

@@ -57,6 +57,10 @@ class Workout(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Workout Template"
+        verbose_name_plural = "Workout Templates"
+
 class CustomWorkout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='custom_workouts')
     name = models.CharField(max_length=200)
@@ -65,6 +69,10 @@ class CustomWorkout(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.user.username})"
+
+    class Meta:
+        verbose_name = "Custom Workout"
+        verbose_name_plural = "Custom Workouts"
 
 class DefaultWorkout(models.Model):
     name = models.CharField(max_length=200)
@@ -77,3 +85,7 @@ class DefaultWorkout(models.Model):
     
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Default Workout"
+        verbose_name_plural = "Default Workouts"
