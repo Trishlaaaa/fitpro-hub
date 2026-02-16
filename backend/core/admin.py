@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout
+from .models import User, WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout, Exercise, ContactMessage
 
 # Register your models here.
 
@@ -52,3 +52,15 @@ class DefaultWorkoutAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'level', 'gender', 'duration', 'difficulty')
     search_fields = ('name', 'category')
     list_filter = ('category', 'level', 'gender', 'difficulty')
+
+@admin.register(Exercise)
+class ExerciseAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'user')
+    search_fields = ('name', 'category', 'user__username')
+    list_filter = ('category', 'user')
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'name', 'email', 'created_at')
+    search_fields = ('name', 'email', 'subject')
+    list_filter = ('created_at',)

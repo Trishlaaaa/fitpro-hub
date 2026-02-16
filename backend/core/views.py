@@ -2,8 +2,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, WeightLogSerializer, WorkoutLogSerializer, DietLogSerializer, WorkoutSerializer, CustomWorkoutSerializer
-from .models import WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout
+from .serializers import UserSerializer, WeightLogSerializer, WorkoutLogSerializer, DietLogSerializer, WorkoutSerializer, CustomWorkoutSerializer, ExerciseSerializer, ContactMessageSerializer
+from .models import WeightLog, WorkoutLog, DietLog, Workout, CustomWorkout, DefaultWorkout, Exercise, ContactMessage
 
 User = get_user_model()
 
@@ -116,4 +116,25 @@ class CustomWorkoutDetail(generics.RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         return CustomWorkout.objects.filter(user=self.request.user)
+
+class ExerciseListCreateView(generics.ListCreateAPIView):
+    serializer_class = ExerciseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Return default exercises (user=None) AND user's custom exercises
+        from django.db.models import Q
+        return Exercise.objects.filter(Q(user=self.request.user) | Q(user__isnull=True))
+
+    def perform_create(self, serializer):
+        # When user creates an exercise, assign it to them
+        serializer.save(user=self.request.user)
+
+class ContactMessageCreateView(generics.CreateAPIView):
+    # Public endpoint, no auth required generally, or make authenticated if specific
+    # The requirement is just "message form", usually public on contact pages.
+    # Assuming public for now given typical use case.
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+    permission_classes = [permissions.AllowAny]
 

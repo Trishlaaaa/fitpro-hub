@@ -89,3 +89,32 @@ class DefaultWorkout(models.Model):
     class Meta:
         verbose_name = "Default Workout"
         verbose_name_plural = "Default Workouts"
+
+class Exercise(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='custom_exercises', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=50, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Exercise Library"
+        verbose_name_plural = "Exercise Library"
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.subject} - {self.email}"
+
+    class Meta:
+        verbose_name = "Contact Message"
+        verbose_name_plural = "Contact Messages"
+        ordering = ['-created_at']
+
+

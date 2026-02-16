@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import Header from '@/components/Header';
+import api from '@/lib/api';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -18,13 +19,19 @@ export default function Contact() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      setSubmitted(false);
-    }, 3000);
+    try {
+      await api.post('/contact/messages/', formData);
+      setSubmitted(true);
+      setTimeout(() => {
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setSubmitted(false);
+      }, 3000);
+    } catch (err) {
+      console.error("Failed to send message", err);
+      alert("Failed to send message. Please try again.");
+    }
   };
 
   const contactInfo = [
